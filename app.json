@@ -1,5 +1,6 @@
 {
   "expo": {
+    "bundler": "metro",
     "name": "travelApp",
     "slug": "travelApp",
     "version": "1.0.0",
