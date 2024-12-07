@@ -8,11 +8,10 @@ const Page = () => {
     <>
       <Stack.Screen
         options={{
-          headerTransparent: true,
-          headerTitle: "",
+          headerShown: false,
         }}
       />
-      <View>
+      <View className="flex-1 justify-center items-center bg-white">
         <Text className="text-black text-center text-4xl font-extrabold leading-tight">
           Let's pack for your trip
         </Text>
