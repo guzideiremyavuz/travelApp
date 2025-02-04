@@ -25,7 +25,7 @@ const CategoryButtons = () => {
                 ? `bg-[${Colors.primaryColor}] border-[${Colors.primaryColor}]`
                 : "bg-transparent border-gray-400" 
             }
-             ${index !== Categories.length - 1 ? "mr-1" : ""}
+             ${index !== Categories.length - 1 ? "mr-2" : ""}
             `}
             style={{
               backgroundColor: activeIndex === index ? Colors.primaryColor : "transparent", 
