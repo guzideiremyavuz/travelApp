@@ -27,13 +27,21 @@ const Listings = ({ listings }) => {
           source={imageMap[item.id]} 
           className="w-64 h-40 rounded-lg"
         />
-        <Text className="text-black text-xl font-bold">{item.name}</Text>
         <View className="absolute top-[185px] right-[30px] p-2 rounded-full"
         style={{backgroundColor: Colors.primaryColor,
           borderWidth:2,
           borderColor:Colors.white
         }}>
           <Ionicons name="bookmark-outline" size={24} color={Colors.white}/>
+        </View>
+
+        <View className="bg-white p-2 rounded-lg mt-2 w-64"> 
+          <Text className="text-black text-xl font-bold">{item.name}</Text>
+          <Text className="text-gray-500">{item.location}</Text>
+
+          <View className="flex-row justify-between items-center mt-2">
+            <Text className="flex-row justify-between items-center mt-2">${item.price}</Text>
+          </View>
         </View>
       </View>
       </TouchableOpacity>
@@ -47,7 +55,7 @@ const Listings = ({ listings }) => {
         renderItem={renderItems}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 10,bottom:72 }}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
         keyExtractor={(item) => item.id.toString()}
       />
     </View>
