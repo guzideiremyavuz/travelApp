@@ -1,8 +1,21 @@
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
+import { useRouter, Link} from "expo-router";
 import { ListingType } from "../types/listingType";
-import Colors, { primaryColor, black, white,bgColor } from "../constants/Colors";
-import { Ionicons} from  "@expo/vector-icons"
+import Colors, {
+  primaryColor,
+  black,
+  white,
+  bgColor,
+} from "../constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 const imageMap = {
   1: require("../assets/id1.jpg"),
@@ -17,48 +30,52 @@ const imageMap = {
   10: require("../assets/id10.jpg"),
 };
 
+type Props={
+  listings: any[];
+}
+
 const Listings = ({ listings }) => {
+  const router = useRouter();
   const renderItems = ({ item }) => {
     return (
-      <TouchableOpacity>
-      <View className="flex-1 justify-center items-center px-6"
-      style={{backgroundColor:Colors.white}}>
-        <Image
-          source={imageMap[item.id]} 
-          className="w-64 h-40 rounded-lg"
-        />
-        <View className="absolute top-[185px] right-[30px] p-2 rounded-full"
-        style={{backgroundColor: Colors.primaryColor,
-          borderWidth:2,
-          borderColor:Colors.white
-        }}>
-          <Ionicons name="bookmark-outline" size={24} color={Colors.white}/>
-        </View>
+      <Link href={`/listing/${item.id}`} asChild> 
+      <TouchableOpacity onPress={() => router.push(`/listing/${item.id}`)}>
+        <View
+          className="items-center px-6 pb-8"
+          style={{ backgroundColor: Colors.bgColor }}
+        >
+          <View className="relative pb-8">
+            <Image
+              source={imageMap[item.imageId]}
+              className="w-[250px] h-[160px] rounded-2xl"
+            />
 
-        <View className="bg-white p-2 rounded-lg mt-2 w-64"> 
-          <Text className="text-black text-xl font-bold">{item.name}</Text>
-          <Text className="text-gray-500">{item.location}</Text>
-
-          <View className="flex-row justify-between items-center mt-2">
-            <Text className="flex-row justify-between items-center mt-2">${item.price}</Text>
+            <View className="absolute -bottom-3 self-center w-[230px] bg-white rounded-2xl px-4 py-3 shadow-md">
+              
+              <View className="flex-row justify-between items-center">
+                <View>
+                <Text className="text-black text-base font-bold">{item.name}</Text>
+                <Text className="text-gray-500">{item.location}</Text>
+                </View>
+                <Text className="text-orange-500 font-bold">${item.price}</Text>
+              </View>
+            </View>
           </View>
         </View>
-      </View>
       </TouchableOpacity>
+      </Link>
     );
   };
 
   return (
-    <View className="flex-1  items-center justify-center">
-      <FlatList 
-        data={listings}
-        renderItem={renderItems}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 10 }}
-        keyExtractor={(item) => item.id.toString()}
-      />
-    </View>
+    <FlatList
+      data={listings}
+      renderItem={renderItems}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{ paddingHorizontal: 10 }}
+      keyExtractor={(item) => item.id.toString()}
+    />
   );
 };
 

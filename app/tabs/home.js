@@ -8,13 +8,15 @@ import destinationCategories from "../../data/destinationCategories";
 
 const Home = () => {
   console.log("Destination Categories:", destinationCategories);
+  console.log("DATA KONTROL:", destinationCategories);
 
   const onCatChanged = (category) => {
     console.log("Selected Category:", category);
   };
 
   return (
-    <View className="flex-1 justify-start items-start p-4 pt-6">
+    <View className="flex-1 justify-start items-start p-4 pt-6"
+    style={{ backgroundColor: Colors.bgColor }}>
       <Text className="text-black text-left text-4xl font-extrabold leading-tight">
         Let's pack for{"\n"}your trip
       </Text>
@@ -39,8 +41,8 @@ const Home = () => {
       </View>
 
       <CategoryButtons onCategoryChanged={onCatChanged} />
-
-      <View className="flex-row items-center justify-between w-full">
+      <View className="w-full mt-4">
+      <View className="flex-row items-center justify-between mb-1">
         <Text className="text-black text-2xl font-bold leading-relaxed ">
           Favorite Place
         </Text>
@@ -48,8 +50,8 @@ const Home = () => {
           View all
         </Text>
       </View>
-
       <Listings listings={destinationCategories} />
+    </View>
     </View>
   );
 };
