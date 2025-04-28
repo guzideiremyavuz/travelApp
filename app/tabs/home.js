@@ -1,10 +1,11 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity,ScrollView } from "react-native";
 import { Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Colors, { primaryColor, black, white } from "../../constants/Colors";
 import CategoryButtons from "../../components/CategoryButtons";
 import Listings from "../../components/Listings";
 import destinationCategories from "../../data/destinationCategories";
+import YouMightLike from "../../components/YouMightLike";
 
 const Home = () => {
   console.log("Destination Categories:", destinationCategories);
@@ -15,8 +16,7 @@ const Home = () => {
   };
 
   return (
-    <View className="flex-1 justify-start items-start p-4 pt-6"
-    style={{ backgroundColor: Colors.bgColor }}>
+    <ScrollView className="flex-1" style={{ backgroundColor: Colors.bgColor }} contentContainerStyle={{ padding: 16, paddingTop: 24 }}>
       <Text className="text-black text-left text-4xl font-extrabold leading-tight">
         Let's pack for{"\n"}your trip
       </Text>
@@ -44,15 +44,16 @@ const Home = () => {
       <View className="w-full mt-4">
       <View className="flex-row items-center justify-between mb-1">
         <Text className="text-black text-2xl font-bold leading-relaxed ">
-          Favorite Place
+        Recommended Places
         </Text>
         <Text className="text-gray-400 text-lg font-s leading-relaxed">
           View all
         </Text>
       </View>
       <Listings listings={destinationCategories} />
+      <YouMightLike />
     </View>
-    </View>
+    </ScrollView>
   );
 };
 
