@@ -1,25 +1,31 @@
-import { View, Text, TextInput, TouchableOpacity,ScrollView } from "react-native";
-import { Stack } from "expo-router";
+import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Colors, { primaryColor, black, white } from "../../constants/Colors";
+import Colors from "../../constants/Colors";
 import CategoryButtons from "../../components/CategoryButtons";
-import Listings from "../../components/Listings";
-import destinationCategories from "../../data/destinationCategories";
 import YouMightLike from "../../components/YouMightLike";
+import RecommendedPlaces from "../../components/RecomendedPlaces";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+
 
 const Home = () => {
-  console.log("Destination Categories:", destinationCategories);
-  console.log("DATA KONTROL:", destinationCategories);
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const router = useRouter();
 
   const onCatChanged = (category) => {
     console.log("Selected Category:", category);
   };
 
   return (
-    <ScrollView className="flex-1" style={{ backgroundColor: Colors.bgColor }} contentContainerStyle={{ padding: 16, paddingTop: 24 }}>
+    <ScrollView
+      className="flex-1"
+      style={{ backgroundColor: Colors.bgColor }}
+      contentContainerStyle={{ padding: 16, paddingTop: 24 }}
+    >
       <Text className="text-black text-left text-4xl font-extrabold leading-tight">
         Let's pack for{"\n"}your trip
       </Text>
+
       <Text className="text-grey-100 text-left text-lg leading-tight opacity-50 mt-4">
         Use one of our suggestions or make a{"\n"}list of what a pack
       </Text>
@@ -29,8 +35,14 @@ const Home = () => {
         <TextInput
           placeholder="Search location"
           className="flex-1 text-grey-300 text-lg"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={() => {
+            if (searchQuery.trim().length > 0) {
+              router.push(`/search?query=${searchQuery}`);
+            }
+          }}
         />
-
         <TouchableOpacity
           onPress={() => {}}
           className="px-2 py-2 rounded-lg border border-[#ff7f36] ml-auto"
@@ -41,18 +53,12 @@ const Home = () => {
       </View>
 
       <CategoryButtons onCategoryChanged={onCatChanged} />
-      <View className="w-full mt-4">
-      <View className="flex-row items-center justify-between mb-1">
-        <Text className="text-black text-2xl font-bold leading-relaxed ">
-        Recommended Places
-        </Text>
-        <Text className="text-gray-400 text-lg font-s leading-relaxed">
-          View all
-        </Text>
-      </View>
-      <Listings listings={destinationCategories} />
+
+      {/* ✅ RecommendedPlaces BAŞLIĞI BURADA */}
+      <RecommendedPlaces />
+
+      {/* YouMightLike en sonda */}
       <YouMightLike />
-    </View>
     </ScrollView>
   );
 };
