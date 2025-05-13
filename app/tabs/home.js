@@ -39,7 +39,7 @@ const Home = () => {
           onChangeText={setSearchQuery}
           onSubmitEditing={() => {
             if (searchQuery.trim().length > 0) {
-              router.push(`/search?query=${searchQuery}`);
+              router.push(`/search/${searchQuery}`);
             }
           }}
         />
@@ -54,10 +54,10 @@ const Home = () => {
 
       <CategoryButtons onCategoryChanged={onCatChanged} />
 
-      {/* ✅ RecommendedPlaces BAŞLIĞI BURADA */}
+     
       <RecommendedPlaces />
 
-      {/* YouMightLike en sonda */}
+      
       <YouMightLike />
     </ScrollView>
   );

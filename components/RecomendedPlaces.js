@@ -1,15 +1,24 @@
 import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useFavorites } from "../context/FavoriteContext";
+import { useUser } from "../context/UserContext";
+
 
 const RecommendedPlaces = () => {
   const [recommendedData, setRecommendedData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { favorites, toggleFavorite } = useFavorites();
+  const { user } = useUser();
 
+  const router = useRouter();
   useEffect(() => {
     const fetchRecommendedData = async () => {
       try {
-        const res = await fetch("https://67f6443142d6c71cca613e64.mockapi.io/recomendedPlaces");
+        const res = await fetch(
+          "https://67f6443142d6c71cca613e64.mockapi.io/recomendedPlaces"
+        );
         const json = await res.json();
         setRecommendedData(json);
       } catch (error) {
@@ -23,30 +32,57 @@ const RecommendedPlaces = () => {
   }, []);
 
   const renderItems = ({ item }) => (
-    <Link href={`/recommendedplacedetail/${item.id}`} asChild>
-      <TouchableOpacity className="mr-4">
-        <View className="w-[250px] bg-white rounded-2xl shadow-md overflow-hidden">
-          <Image
-            source={{ uri: item.image }}
-            className="w-full h-[160px]"
-            resizeMode="cover"
+    <TouchableOpacity
+      className="mr-4"
+      onPress={() => router.push(`/listing/${item.id}`)}
+    >
+      <View className="w-[250px] bg-white rounded-2xl shadow-md overflow-hidden">
+        <TouchableOpacity
+          onPress={() => {
+            if (!user) {
+              router.push("/profile/auth");
+              return;
+            }
+            toggleFavorite(item);
+          }}
+          className="absolute top-2 right-2 z-10 bg-white/70 p-1.5 rounded-full"
+        >
+          <Ionicons
+            name={
+              favorites.some((fav) => fav.id === item.id)
+                ? "heart"
+                : "heart-outline"
+            }
+            size={26}
+            color={favorites.some((fav) => fav.id === item.id) ? "red" : "gray"}
           />
-          <View className="p-4">
-            <View className="flex-row justify-between items-start">
-              <View className="flex-1 pr-2">
-                <Text className="text-black text-base font-bold" numberOfLines={1}>
-                  {item.name}
-                </Text>
-                <Text className="text-gray-500 text-sm" numberOfLines={1}>
-                  {item.location}
-                </Text>
-              </View>
-              <Text className="text-orange-500 font-bold text-sm">${item.price}</Text>
+        </TouchableOpacity>
+
+        <Image
+          source={{ uri: item.image }}
+          className="w-full h-[160px]"
+          resizeMode="cover"
+        />
+        <View className="p-4">
+          <View className="flex-row justify-between items-start">
+            <View className="flex-1 pr-2">
+              <Text
+                className="text-black text-base font-bold"
+                numberOfLines={1}
+              >
+                {item.name}
+              </Text>
+              <Text className="text-gray-500 text-sm" numberOfLines={1}>
+                {item.country}
+              </Text>
             </View>
+            <Text className="text-orange-500 font-bold text-sm">
+              ${item.price}
+            </Text>
           </View>
         </View>
-      </TouchableOpacity>
-    </Link>
+      </View>
+    </TouchableOpacity>
   );
 
   if (loading) return null;

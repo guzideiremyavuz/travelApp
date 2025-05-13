@@ -1,9 +1,14 @@
-import { Stack, Slot } from "expo-router";
+import { Stack } from "expo-router";
+import { FavoriteProvider } from "../context/FavoriteContext";
+import { UserProvider } from "../context/UserContext"; // ekledik
 
 export default function Layout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Slot />
-    </Stack>
+    <UserProvider>
+      <FavoriteProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </FavoriteProvider>
+    </UserProvider>
   );
 }
+

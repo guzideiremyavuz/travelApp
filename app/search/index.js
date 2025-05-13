@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import { useFavorites } from "../../context/FavoriteContext";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Colors from "../../constants/Colors";
-import { Ionicons } from "@expo/vector-icons";
-
+import { useUser } from "../../context/UserContext";
 
 export default function Search() {
   const { query } = useLocalSearchParams();
@@ -19,35 +20,36 @@ export default function Search() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [allPlaces, setAllPlaces] = useState([]);
-
-
+  const { favorites, toggleFavorite } = useFavorites();
+  const { user } = useUser();
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 500));
-  
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         const endpoints = [
           "https://67f6443142d6c71cca613e64.mockapi.io/searchPlaces",
           "https://67f6443142d6c71cca613e64.mockapi.io/searchPlaces1",
           "https://67f6443142d6c71cca613e64.mockapi.io/searchPlaces2",
           "https://67f6443142d6c71cca613e64.mockapi.io/searchPlaces3",
-          "https://67f6443142d6c71cca613e64.mockapi.io/recomendedPlaces"
+          "https://67f6443142d6c71cca613e64.mockapi.io/recomendedPlaces",
         ];
-  
+
         const allData = await Promise.all(
           endpoints.map((url) => fetch(url).then((res) => res.json()))
         );
-  
+
         const mergedData = allData.flat();
-  
+
         const filtered =
           (query || "").length === 0
             ? mergedData.slice(0, 5)
             : mergedData.filter((place) =>
-                place.country.toLowerCase().includes(query.toLowerCase())
+                place.country?.toLowerCase().includes(query?.toLowerCase())
               );
-              
-        setAllPlaces(mergedData); 
+
+        setAllPlaces(mergedData);
         setFilteredPlaces(filtered);
         setSearchTerm(query || "");
       } catch (err) {
@@ -56,17 +58,16 @@ export default function Search() {
         setLoading(false);
       }
     };
-  
+
     fetchData();
-  }, [query]);  
+  }, [query]);
 
   const handleSearch = () => {
     const newFiltered = allPlaces.filter((place) =>
-      place.country.toLowerCase().includes(searchTerm.toLowerCase())
+      place.country?.toLowerCase().includes(searchTerm?.toLowerCase())
     );
     setFilteredPlaces(newFiltered);
   };
-  
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -74,13 +75,36 @@ export default function Search() {
       className="mb-6"
     >
       <View className="mx-4 bg-white rounded-2xl shadow-lg">
+        <TouchableOpacity
+          onPress={() => {
+            if (!user) {
+              router.push("/profile/auth");
+              return;
+            }
+            toggleFavorite(item);
+          }}
+          className="absolute top-2 right-2 z-10 bg-white/70 p-2 rounded-full"
+        >
+          <Ionicons
+            name={
+              favorites.some((fav) => fav.id === item.id)
+                ? "heart"
+                : "heart-outline"
+            }
+            size={26}
+            color={favorites.some((fav) => fav.id === item.id) ? "red" : "gray"}
+          />
+        </TouchableOpacity>
+
         <Image
           source={{ uri: item.image }}
           className="w-full h-52 rounded-t-2xl"
         />
         <View className="p-4">
           <View className="flex-row justify-between items-center mb-1">
-            <Text className="text-black font-semibold text-base">{item.title}</Text>
+            <Text className="text-black font-semibold text-base">
+              {item.name || item.title}
+            </Text>
             <Text className="text-orange-500 font-bold">{item.price}</Text>
           </View>
           <Text className="text-gray-500 text-sm">{item.country}</Text>
@@ -93,31 +117,27 @@ export default function Search() {
       </View>
     </TouchableOpacity>
   );
-  
 
   return (
     <View className="flex-1 bg-[#f9f9f9] pt-6">
-      
       <View className="px-4 mb-4">
-  <View className="flex-row items-center bg-white p-3 rounded-lg shadow">
-    <Ionicons name="search" size={20} color="#999" className="mr-2" />
-    <TextInput
-      placeholder="Search location"
-      placeholderTextColor="#999"
-      value={searchTerm}
-      onChangeText={setSearchTerm}
-      onSubmitEditing={handleSearch}
-      className="flex-1 text-base text-black"
-    />
-    <Image
-      source={require("../../assets/traveller.png")}
-      style={{ width: 30, height: 30, marginLeft: 10 }}
-      resizeMode="contain"
-    />
-  </View>
-</View>
-
-
+        <View className="flex-row items-center bg-white p-3 rounded-lg shadow">
+          <Ionicons name="search" size={20} color="#999" className="mr-2" />
+          <TextInput
+            placeholder="Search location"
+            placeholderTextColor="#999"
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            onSubmitEditing={handleSearch}
+            className="flex-1 text-base text-black"
+          />
+          <Image
+            source={require("../../assets/traveller.png")}
+            style={{ width: 30, height: 30, marginLeft: 10 }}
+            resizeMode="contain"
+          />
+        </View>
+      </View>
 
       <Text className="text-2xl font-bold px-4 mb-4">
         Results for "{searchTerm}"
@@ -131,7 +151,9 @@ export default function Search() {
         <FlatList
           data={filteredPlaces}
           renderItem={renderItem}
-          keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+          keyExtractor={(item, index) =>
+            item.id?.toString() || index.toString()
+          }
           contentContainerStyle={{ paddingBottom: 32 }}
         />
       )}
