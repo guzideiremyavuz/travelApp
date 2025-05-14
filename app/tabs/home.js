@@ -1,7 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
-import CategoryButtons from "../../components/CategoryButtons";
 import YouMightLike from "../../components/YouMightLike";
 import RecommendedPlaces from "../../components/RecomendedPlaces";
 import { useRouter } from "expo-router";
@@ -43,16 +42,9 @@ const Home = () => {
             }
           }}
         />
-        <TouchableOpacity
-          onPress={() => {}}
-          className="px-2 py-2 rounded-lg border border-[#ff7f36] ml-auto"
-          style={{ backgroundColor: Colors.primaryColor }}
-        >
-          <Ionicons name="options" size={28} color={Colors.white} />
-        </TouchableOpacity>
+
       </View>
 
-      <CategoryButtons onCategoryChanged={onCatChanged} />
 
      
       <RecommendedPlaces />

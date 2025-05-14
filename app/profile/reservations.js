@@ -12,7 +12,7 @@ export default function Reservations({ userId }) {
           `https://67f6443142d6c71cca613e64.mockapi.io/reservations?userId=${userId}`
         );
         const data = await res.json();
-        setReservations(data);
+        setReservations(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Reservation fetch error:", err);
       } finally {
@@ -84,7 +84,9 @@ export default function Reservations({ userId }) {
                 onPress={() => handleCancel(item.id)}
                 className="mt-2 bg-red-500 px-4 py-2 rounded-full self-start"
               >
-                <Text className="text-white font-semibold text-sm">Cancel Reservation</Text>
+                <Text className="text-white font-semibold text-sm">
+                  Cancel Reservation
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -96,15 +98,15 @@ export default function Reservations({ userId }) {
   if (loading) {
     return (
       <View className="mt-6">
-        <Text className="text-center text-gray-400">Loading reservations...</Text>
+        <Text className="text-center text-gray-400">
+          Loading reservations...
+        </Text>
       </View>
     );
   }
 
   const past = reservations.filter((r) => isPast(r.endDate));
-  const ongoing = reservations.filter((r) =>
-    isOngoing(r.startDate, r.endDate)
-  );
+  const ongoing = reservations.filter((r) => isOngoing(r.startDate, r.endDate));
   const upcoming = reservations.filter((r) => isUpcoming(r.startDate));
 
   return (

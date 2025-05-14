@@ -92,7 +92,7 @@ const RecommendedPlaces = () => {
     <View className="mt-6 px-4">
       <View className="flex-row items-center justify-between mb-2">
         <Text className="text-black text-xl font-bold">Recommended Places</Text>
-        <Text className="text-gray-400">View all</Text>
+        
       </View>
 
       <FlatList
