@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useFavorites } from "../../context/FavoriteContext";
@@ -37,7 +31,9 @@ const ListingDetail = () => {
           endpoints.map((url) => fetch(url).then((res) => res.json()))
         );
         const merged = allData.flat();
-        const found = merged.find((item) => item.id?.toString() === id?.toString());
+        const found = merged.find(
+          (item) => item.id?.toString() === id?.toString()
+        );
         setData(found);
       } catch (error) {
         console.error("Veri çekme hatası:", error);
@@ -165,17 +161,20 @@ const ListingDetail = () => {
           <View>
             <Text className="text-gray-500 text-xs">Total Price</Text>
             <Text className="text-orange-500 text-xl font-bold">
-              ${totalPrice} <Text className="text-xs text-gray-400">/total</Text>
+              ${totalPrice}{" "}
+              <Text className="text-xs text-gray-400">/total</Text>
             </Text>
           </View>
 
           <TouchableOpacity
             className="bg-orange-500 px-6 py-3 rounded-full"
             onPress={() => {
-              router.push(`/tabs/bookmarks?id=${data.id?.toString()}`);
+              router.push(`/tabs/bookmarks?id=${data.id}&count=${personCount}`);
             }}
           >
-            <Text className="text-white font-semibold text-base">Order Now</Text>
+            <Text className="text-white font-semibold text-base">
+              Order Now
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

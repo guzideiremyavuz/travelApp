@@ -2,12 +2,28 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
+import { useUser } from "../../context/UserContext";
+
 
 export default function Bookmarks() {
+  const { user } = useUser();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+  const { id, count } = useLocalSearchParams();
+  const [personCount, setPersonCount] = useState(Number(count) || 1);
+  const [placeData, setPlaceData] = useState(null);
+  const [checkInTime, setCheckInTime] = useState("morning");
+
+  const endpoints = [
+    "https://67f6443142d6c71cca613e64.mockapi.io/recomendedPlaces",
+    "https://67f6443142d6c71cca613e64.mockapi.io/places",
+    "https://67f6443142d6c71cca613e64.mockapi.io/searchPlaces",
+    "https://67f6443142d6c71cca613e64.mockapi.io/searchPlaces1",
+    "https://67f6443142d6c71cca613e64.mockapi.io/searchPlaces2",
+    "https://67f6443142d6c71cca613e64.mockapi.io/searchPlaces3",
+  ];
 
   const handleDayPress = (day) => {
     if (!startDate || (startDate && endDate)) {
@@ -62,8 +78,29 @@ export default function Bookmarks() {
 
     return marked;
   };
+  const getTotalPrice = () => {
+    const pricePerPerson = parseFloat(placeData?.price || "0");
+    const nights = getStayNights();
+    return pricePerPerson * personCount * nights;
+  };
 
-  
+  useEffect(() => {
+    const fetchPlace = async () => {
+      try {
+        const all = await Promise.all(
+          endpoints.map((url) => fetch(url).then((res) => res.json()))
+        );
+        const flat = all.flat();
+        const found = flat.find((item) => item.id === id);
+        setPlaceData(found);
+      } catch (err) {
+        console.error("Place fetch error:", err);
+      }
+    };
+
+    if (id) fetchPlace();
+  }, [id]);
+
   if (!id) {
     return (
       <View className="flex-1 justify-center items-center bg-white px-8">
@@ -71,7 +108,8 @@ export default function Bookmarks() {
           No vacation plan selected yet
         </Text>
         <Text className="text-base text-gray-400 text-center">
-          Please pick a destination first and tap "Order Now" to set your stay dates.
+          Please pick a destination first and tap "Order Now" to set your stay
+          dates.
         </Text>
       </View>
     );
@@ -90,27 +128,73 @@ export default function Bookmarks() {
         {startDate && (
           <Text className="text-base mb-2">Start Date: {startDate}</Text>
         )}
-        {endDate && (
-          <Text className="text-base mb-2">End Date: {endDate}</Text>
-        )}
+        {endDate && <Text className="text-base mb-2">End Date: {endDate}</Text>}
         {startDate && endDate && (
           <Text className="text-base font-semibold text-green-600">
             You’ll stay {getStayNights()} nights
           </Text>
         )}
+        {placeData && startDate && endDate && (
+          <Text className="text-lg font-bold text-orange-500 mt-2">
+            Total Price: ${getTotalPrice().toFixed(2)}
+          </Text>
+        )}
+        <View className="mt-4 flex-row justify-center space-x-4">
+  <TouchableOpacity
+    onPress={() => setCheckInTime("morning")}
+    className={`px-4 py-2 rounded-full ${checkInTime === "morning" ? "bg-orange-500" : "bg-gray-200"}`}
+  >
+    <Text className={checkInTime === "morning" ? "text-white font-bold" : "text-gray-600"}>Morning</Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    onPress={() => setCheckInTime("evening")}
+    className={`px-4 py-2 rounded-full ${checkInTime === "evening" ? "bg-orange-500" : "bg-gray-200"}`}
+  >
+    <Text className={checkInTime === "evening" ? "text-white font-bold" : "text-gray-600"}>Evening</Text>
+  </TouchableOpacity>
+</View>
+
       </View>
 
       <TouchableOpacity
-        onPress={() => {
-          if (startDate && endDate) {
-            alert("Dates saved! 🎉");
-            
-          }
-        }}
-        className="mt-6 bg-orange-500 py-3 px-6 rounded-full"
-      >
-        <Text className="text-white text-center font-bold">Confirm Dates</Text>
-      </TouchableOpacity>
+  onPress={async () => {
+    if (!startDate || !endDate || !placeData || !user?.id) return;
+
+    const payload = {
+      userId: Number(user.id),
+      placeId: placeData.id,
+      placeName: placeData.name,
+      startDate,
+      endDate,
+      checkInTime,
+      personCount,
+      totalPrice: getTotalPrice(),
+    };
+
+    try {
+      const res = await fetch("https://67f6443142d6c71cca613e64.mockapi.io/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        alert("Reservation saved!");
+        router.push("/tabs/profile"); // Rezervasyon sonrası yönlendirme
+      } else {
+        alert("Failed to save reservation.");
+      }
+    } catch (err) {
+      console.error("Reservation error:", err);
+      alert("Error occurred.");
+    }
+  }}
+  className="mt-6 bg-orange-500 py-3 px-6 rounded-full"
+>
+  <Text className="text-white text-center font-bold">Confirm Dates</Text>
+</TouchableOpacity>
+
     </View>
   );
 }
