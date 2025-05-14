@@ -5,14 +5,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFavorites } from "../context/FavoriteContext";
 import { useUser } from "../context/UserContext";
 
-
 const RecommendedPlaces = () => {
   const [recommendedData, setRecommendedData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { favorites, toggleFavorite } = useFavorites();
   const { user } = useUser();
-
   const router = useRouter();
+
   useEffect(() => {
     const fetchRecommendedData = async () => {
       try {
@@ -31,71 +30,71 @@ const RecommendedPlaces = () => {
     fetchRecommendedData();
   }, []);
 
-  const renderItems = ({ item }) => (
-    <TouchableOpacity
-      className="mr-4"
-      onPress={() => router.push(`/listing/${item.id}`)}
-    >
-      <View className="w-[250px] bg-white rounded-2xl shadow-md overflow-hidden">
-        <TouchableOpacity
-          onPress={() => {
-            if (!user) {
-              router.push("/profile/auth");
-              return;
-            }
-            toggleFavorite(item);
-          }}
-          className="absolute top-2 right-2 z-10 bg-white/70 p-1.5 rounded-full"
-        >
-          <Ionicons
-            name={
-              favorites.some((fav) => fav.id === item.id)
-                ? "heart"
-                : "heart-outline"
-            }
-            size={26}
-            color={favorites.some((fav) => fav.id === item.id) ? "red" : "gray"}
-          />
-        </TouchableOpacity>
+  const renderItems = ({ item }) => {
+    const isFavorite =
+      Array.isArray(favorites) &&
+      favorites.some((fav) => fav.placeId.toString() === item.id.toString());
 
-        <Image
-          source={{ uri: item.image }}
-          className="w-full h-[160px]"
-          resizeMode="cover"
-        />
-        <View className="p-4">
-          <View className="flex-row justify-between items-start">
-            <View className="flex-1 pr-2">
-              <Text
-                className="text-black text-base font-bold"
-                numberOfLines={1}
-              >
-                {item.name}
-              </Text>
-              <Text className="text-gray-500 text-sm" numberOfLines={1}>
-                {item.country}
+    return (
+      <TouchableOpacity
+        className="mr-4"
+        onPress={() => router.push(`/listing/${item.id}`)}
+      >
+        <View className="w-[250px] bg-white rounded-2xl shadow-md overflow-hidden">
+          <TouchableOpacity
+            onPress={() => {
+              if (!user?.id) {
+                router.push("/profile/auth");
+                return;
+              }
+              toggleFavorite(item);
+            }}
+            className="absolute top-2 right-2 z-10 bg-white/70 p-1.5 rounded-full"
+          >
+            <Ionicons
+              name={isFavorite ? "heart" : "heart-outline"}
+              size={26}
+              color={isFavorite ? "red" : "gray"}
+            />
+          </TouchableOpacity>
+
+          <Image
+            source={{ uri: item.image }}
+            className="w-full h-[160px]"
+            resizeMode="cover"
+          />
+          <View className="p-4">
+            <View className="flex-row justify-between items-start">
+              <View className="flex-1 pr-2">
+                <Text
+                  className="text-black text-base font-bold"
+                  numberOfLines={1}
+                >
+                  {item.name}
+                </Text>
+                <Text className="text-gray-500 text-sm" numberOfLines={1}>
+                  {item.country}
+                </Text>
+              </View>
+              <Text className="text-orange-500 font-bold text-sm">
+                ${item.price}
               </Text>
             </View>
-            <Text className="text-orange-500 font-bold text-sm">
-              ${item.price}
-            </Text>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) return null;
 
   return (
     <View className="mt-6 px-4">
-      {/* Recommended başlığı solda ve view içinde */}
       <View className="flex-row items-center justify-between mb-2">
         <Text className="text-black text-xl font-bold">Recommended Places</Text>
         <Text className="text-gray-400">View all</Text>
       </View>
 
-      {/* Kartlar */}
       <FlatList
         data={recommendedData}
         renderItem={renderItems}

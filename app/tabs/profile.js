@@ -7,7 +7,7 @@ export default function Profile() {
   const { user, setUser } = useUser();
   const router = useRouter();
 
-  if (!user) {
+  if (!user?.id) {
     return (
       <View className="flex-1 justify-center items-center bg-white px-6">
         <Text className="text-xl font-bold text-gray-700 text-center mb-3">
@@ -25,8 +25,12 @@ export default function Profile() {
 
   return (
     <View className="flex-1 justify-center items-center bg-white px-6">
-      <Text className="text-2xl font-bold mb-4">Welcome, {user.name}!</Text>
-      <Text className="text-base text-gray-600 mb-8">{user.email}</Text>
+      <Text className="text-2xl font-bold mb-4">
+        Welcome, {user?.name || "User"}!
+      </Text>
+      <Text className="text-base text-gray-600 mb-8">
+        {user?.email || "No email"}
+      </Text>
 
       <TouchableOpacity
         onPress={() => setUser(null)}
@@ -37,4 +41,3 @@ export default function Profile() {
     </View>
   );
 }
-

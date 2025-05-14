@@ -69,7 +69,10 @@ export default function Search() {
     setFilteredPlaces(newFiltered);
   };
 
-  const renderItem = ({ item }) => (
+ const renderItem = ({ item }) => {
+  const isFavorite = favorites.some((fav) => fav.placeId === item.id);
+
+  return (
     <TouchableOpacity
       onPress={() => router.push(`/listing/${item.id}`)}
       className="mb-6"
@@ -86,13 +89,9 @@ export default function Search() {
           className="absolute top-2 right-2 z-10 bg-white/70 p-2 rounded-full"
         >
           <Ionicons
-            name={
-              favorites.some((fav) => fav.id === item.id)
-                ? "heart"
-                : "heart-outline"
-            }
+            name={isFavorite ? "heart" : "heart-outline"}
             size={26}
-            color={favorites.some((fav) => fav.id === item.id) ? "red" : "gray"}
+            color={isFavorite ? "red" : "gray"}
           />
         </TouchableOpacity>
 
@@ -117,6 +116,7 @@ export default function Search() {
       </View>
     </TouchableOpacity>
   );
+};
 
   return (
     <View className="flex-1 bg-[#f9f9f9] pt-6">

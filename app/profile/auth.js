@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useUser } from "../../context/UserContext";
 
@@ -12,13 +20,41 @@ export default function AuthScreen() {
 
   const BASE_URL = "https://67f6443142d6c71cca613e64.mockapi.io/users";
 
+  const isValidEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const isValidPassword = (password) => {
+    return password.length >= 6; // Example rule
+  };
+
   const handleRegister = async () => {
-    if (!name || !email || !password) {
+    if (!name.trim() || !email.trim() || !password.trim()) {
       Alert.alert("Error", "Please fill in all fields.");
       return;
     }
 
+    if (!isValidEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address.");
+      return;
+    }
+
+    if (!isValidPassword(password)) {
+      Alert.alert("Error", "Password must be at least 6 characters long.");
+      return;
+    }
+
     try {
+      const resCheck = await fetch(BASE_URL);
+      const users = await resCheck.json();
+      const existing = users.find((u) => u.email === email);
+
+      if (existing) {
+        Alert.alert("Error", "This email is already registered.");
+        return;
+      }
+
       const res = await fetch(BASE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -26,17 +62,25 @@ export default function AuthScreen() {
       });
 
       const data = await res.json();
-      setUser(data);
+      if (!data?.id) throw new Error("Registration failed");
+
+      await setUser(data);
       Alert.alert("Welcome", "Account created!");
       router.push("/tabs/home");
     } catch (err) {
-      Alert.alert("Error", "Registration failed.");
+      Alert.alert("Error", "Registration failed. Please try again.");
+      console.error("Register error:", err);
     }
   };
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!email.trim() || !password.trim()) {
       Alert.alert("Error", "Email and password required.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address.");
       return;
     }
 
@@ -49,19 +93,23 @@ export default function AuthScreen() {
       );
 
       if (found) {
-        setUser(found);
+        await setUser(found);
         Alert.alert("Welcome", `Welcome back, ${found.name}`);
         router.push("/tabs/home");
       } else {
         Alert.alert("Login Failed", "Incorrect email or password.");
       }
     } catch (err) {
-      Alert.alert("Error", "Login failed.");
+      Alert.alert("Error", "Login failed. Please try again.");
+      console.error("Login error:", err);
     }
   };
 
   return (
-    <View className="flex-1 bg-white justify-center px-6">
+    <KeyboardAvoidingView
+      className="flex-1 bg-white justify-center px-6"
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <Text className="text-2xl font-bold text-center mb-6">Login / Register</Text>
 
       <TextInput
@@ -69,6 +117,7 @@ export default function AuthScreen() {
         value={name}
         onChangeText={setName}
         className="border p-3 rounded mb-3"
+        autoCapitalize="words"
       />
       <TextInput
         placeholder="Email"
@@ -76,6 +125,7 @@ export default function AuthScreen() {
         onChangeText={setEmail}
         keyboardType="email-address"
         className="border p-3 rounded mb-3"
+        autoCapitalize="none"
       />
       <TextInput
         placeholder="Password"
@@ -98,6 +148,6 @@ export default function AuthScreen() {
       >
         <Text className="text-orange-500 text-center font-bold">Login</Text>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

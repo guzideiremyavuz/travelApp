@@ -1,7 +1,15 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useFavorites } from "../../context/FavoriteContext";
+import { useUser } from "../../context/UserContext";
 import { Ionicons } from "@expo/vector-icons";
 
 const ListingDetail = () => {
@@ -11,6 +19,7 @@ const ListingDetail = () => {
   const [loading, setLoading] = useState(true);
   const [personCount, setPersonCount] = useState(1);
   const { favorites, toggleFavorite } = useFavorites();
+  const { user } = useUser();
 
   const endpoints = [
     "https://67f6443142d6c71cca613e64.mockapi.io/recomendedPlaces",
@@ -28,7 +37,7 @@ const ListingDetail = () => {
           endpoints.map((url) => fetch(url).then((res) => res.json()))
         );
         const merged = allData.flat();
-        const found = merged.find((item) => item.id === id);
+        const found = merged.find((item) => item.id?.toString() === id?.toString());
         setData(found);
       } catch (error) {
         console.error("Veri çekme hatası:", error);
@@ -61,10 +70,18 @@ const ListingDetail = () => {
   }
 
   const totalPrice = (parseFloat(data.price) * personCount).toFixed(2);
+  const isFavorite = favorites.some(
+    (fav) => fav.placeId?.toString() === data.id?.toString()
+  );
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView className="flex-1">
+      <ScrollView
+        className="flex-1"
+        nestedScrollEnabled={true} // Hata önleyici ayar
+        contentContainerStyle={{ paddingBottom: 140 }}
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity
           onPress={() => router.back()}
           className="absolute top-12 left-4 z-10 bg-white p-2 rounded-full shadow"
@@ -73,17 +90,19 @@ const ListingDetail = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => toggleFavorite(data)}
+          onPress={() => {
+            if (!user?.id) {
+              router.push("/profile/auth");
+              return;
+            }
+            toggleFavorite(data);
+          }}
           className="absolute top-12 right-4 z-10 bg-white/70 p-2 rounded-full"
         >
           <Ionicons
-            name={
-              favorites.some((fav) => fav.id === data.id)
-                ? "heart"
-                : "heart-outline"
-            }
+            name={isFavorite ? "heart" : "heart-outline"}
             size={28}
-            color={favorites.some((fav) => fav.id === data.id) ? "red" : "gray"}
+            color={isFavorite ? "red" : "gray"}
           />
         </TouchableOpacity>
 
@@ -93,7 +112,7 @@ const ListingDetail = () => {
           resizeMode="cover"
         />
 
-        <View className="p-5 pb-28">
+        <View className="p-5">
           <Text className="text-2xl font-bold mb-1">
             {data.name || data.title}
           </Text>
@@ -146,20 +165,17 @@ const ListingDetail = () => {
           <View>
             <Text className="text-gray-500 text-xs">Total Price</Text>
             <Text className="text-orange-500 text-xl font-bold">
-              ${totalPrice}{" "}
-              <Text className="text-xs text-gray-400">/total</Text>
+              ${totalPrice} <Text className="text-xs text-gray-400">/total</Text>
             </Text>
           </View>
 
           <TouchableOpacity
             className="bg-orange-500 px-6 py-3 rounded-full"
             onPress={() => {
-                router.push(`/tabs/bookmarks?id=${data.id}`);
+              router.push(`/tabs/bookmarks?id=${data.id?.toString()}`);
             }}
           >
-            <Text className="text-white font-semibold text-base">
-              Order Now
-            </Text>
+            <Text className="text-white font-semibold text-base">Order Now</Text>
           </TouchableOpacity>
         </View>
       </View>
