@@ -133,7 +133,7 @@ export default function Search() {
         <FlatList
           data={filteredPlaces}
           renderItem={renderItem}
-          keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+         keyExtractor={(item, index) => `${item.id}-${index}`}
           contentContainerStyle={{ paddingBottom: 32 }}
         />
       )}

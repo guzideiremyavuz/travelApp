@@ -48,11 +48,12 @@ export default function Search() {
           (query || "").length === 0
             ? mergedData.slice(0, 5)
             : mergedData.filter((place) => {
-                const target =
-                  place.name?.toLowerCase() ||
-                  place.title?.toLowerCase() ||
-                  place.country?.toLowerCase();
-                return target?.includes((query || "").toLowerCase());
+                const queryText = (query || "").toLowerCase();
+                return (
+                  (place.name || "").toLowerCase().includes(queryText) ||
+                  (place.title || "").toLowerCase().includes(queryText) ||
+                  (place.country || "").toLowerCase().includes(queryText)
+                );
               });
 
         setAllPlaces(mergedData);
@@ -75,11 +76,12 @@ export default function Search() {
     }
 
     const matches = allPlaces.filter((place) => {
-      const target =
-        place.name?.toLowerCase() ||
-        place.title?.toLowerCase() ||
-        place.country?.toLowerCase();
-      return target?.includes((searchTerm || "").toLowerCase());
+      const queryText = (searchTerm || "").toLowerCase();
+      return (
+        (place.name || "").toLowerCase().includes(queryText) ||
+        (place.title || "").toLowerCase().includes(queryText) ||
+        (place.country || "").toLowerCase().includes(queryText)
+      );
     });
 
     setSuggestions(matches.slice(0, 3));
@@ -87,11 +89,12 @@ export default function Search() {
 
   const handleSearch = () => {
     const newFiltered = allPlaces.filter((place) => {
-      const target =
-        place.name?.toLowerCase() ||
-        place.title?.toLowerCase() ||
-        place.country?.toLowerCase();
-      return target?.includes((searchTerm || "").toLowerCase());
+      const queryText = (searchTerm || "").toLowerCase();
+      return (
+        (place.name || "").toLowerCase().includes(queryText) ||
+        (place.title || "").toLowerCase().includes(queryText) ||
+        (place.country || "").toLowerCase().includes(queryText)
+      );
     });
     setFilteredPlaces(newFiltered);
   };
@@ -165,25 +168,7 @@ export default function Search() {
           />
         </View>
 
-        {suggestions.length > 0 && (
-          <View className="bg-white shadow mx-4 rounded-b-lg z-50 -mt-2">
-            {suggestions.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => {
-                  setSearchTerm(item.name || item.title || item.country);
-                  handleSearch();
-                  setSuggestions([]);
-                }}
-                className="p-3 border-b border-gray-200"
-              >
-                <Text className="text-black">
-                  {item.name || item.title || item.country}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+
       </View>
 
       <Text className="text-2xl font-bold px-4 mb-4">

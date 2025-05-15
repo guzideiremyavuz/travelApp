@@ -58,7 +58,14 @@ export default function AuthScreen() {
       const res = await fetch(BASE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          cardNumber: "", 
+          expiry: "", 
+          cvv: "", 
+        }),
       });
 
       const data = await res.json();
@@ -110,7 +117,9 @@ export default function AuthScreen() {
       className="flex-1 bg-white justify-center px-6"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <Text className="text-2xl font-bold text-center mb-6">Login / Register</Text>
+      <Text className="text-2xl font-bold text-center mb-6">
+        Login / Register
+      </Text>
 
       <TextInput
         placeholder="Name (only for register)"

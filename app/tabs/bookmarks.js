@@ -182,7 +182,11 @@ export default function Bookmarks() {
       <TouchableOpacity
         onPress={async () => {
           const todayStr = new Date().toISOString().split("T")[0];
-          if (!user?.cardNumber || !user?.expiry || !user?.cvv) {
+          if (
+            !user?.cardNumber?.trim() ||
+            !user?.expiry?.trim() ||
+            !user?.cvv?.trim()
+          ) {
             alert(
               "Please add your credit card info before making a reservation."
             );

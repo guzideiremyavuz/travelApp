@@ -15,11 +15,10 @@ const Page = () => {
         resizeMode="contain"
       />
       <Text className="text-black text-center text-4xl font-extrabold leading-tight">
-        Plan Your Perfect Indonesia Getaway
+        Plan Your Perfect Adventure
       </Text>
       <Text className="text-grey-100 text-center text-lg leading-tight opacity-50 mt-4">
-        Indonesia is a traveler's paradise, and this app has everything you need
-        to plan your dream Bali vacation
+        This app helps you create unforgettable travel experiences by organizing customized trip plans for top destinations around the world
       </Text>
       <TouchableOpacity
         className="w-56 h-14 bg-black mt-6 justify-center items-center rounded-lg"
