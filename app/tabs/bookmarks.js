@@ -182,6 +182,14 @@ export default function Bookmarks() {
       <TouchableOpacity
         onPress={async () => {
           const todayStr = new Date().toISOString().split("T")[0];
+          if (!user?.cardNumber || !user?.expiry || !user?.cvv) {
+            alert(
+              "Please add your credit card info before making a reservation."
+            );
+            router.push("/profile/addCardInfo");
+            return;
+          }
+
           if (startDate < todayStr) {
             alert("You cannot make a reservation in the past.");
             return;

@@ -18,11 +18,12 @@ export default function Search() {
   const [searchTerm, setSearchTerm] = useState(query || "");
   const [filteredPlaces, setFilteredPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const [allPlaces, setAllPlaces] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+
+  const router = useRouter();
   const { favorites, toggleFavorite } = useFavorites();
   const { user } = useUser();
-  const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,12 +47,13 @@ export default function Search() {
         const filtered =
           (query || "").length === 0
             ? mergedData.slice(0, 5)
-            : mergedData.filter(
-                (place) =>
-                  place.country?.toLowerCase().includes(query?.toLowerCase()) ||
-                  place.name?.toLowerCase().includes(query?.toLowerCase()) ||
-                  place.title?.toLowerCase().includes(query?.toLowerCase())
-              );
+            : mergedData.filter((place) => {
+                const target =
+                  place.name?.toLowerCase() ||
+                  place.title?.toLowerCase() ||
+                  place.country?.toLowerCase();
+                return target?.includes((query || "").toLowerCase());
+              });
 
         setAllPlaces(mergedData);
         setFilteredPlaces(filtered);
@@ -65,6 +67,7 @@ export default function Search() {
 
     fetchData();
   }, [query]);
+
   useEffect(() => {
     if (!searchTerm) {
       setSuggestions([]);
@@ -76,19 +79,20 @@ export default function Search() {
         place.name?.toLowerCase() ||
         place.title?.toLowerCase() ||
         place.country?.toLowerCase();
-      return target?.includes(searchTerm.toLowerCase());
+      return target?.includes((searchTerm || "").toLowerCase());
     });
 
     setSuggestions(matches.slice(0, 3));
   }, [searchTerm, allPlaces]);
 
   const handleSearch = () => {
-    const newFiltered = allPlaces.filter(
-      (place) =>
-        place.country?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
-        place.name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
-        place.title?.toLowerCase().includes(searchTerm?.toLowerCase())
-    );
+    const newFiltered = allPlaces.filter((place) => {
+      const target =
+        place.name?.toLowerCase() ||
+        place.title?.toLowerCase() ||
+        place.country?.toLowerCase();
+      return target?.includes((searchTerm || "").toLowerCase());
+    });
     setFilteredPlaces(newFiltered);
   };
 
@@ -145,14 +149,14 @@ export default function Search() {
     <View className="flex-1 bg-[#f9f9f9] pt-6">
       <View className="px-4 mb-4">
         <View className="flex-row items-center bg-white p-3 rounded-lg shadow">
-          <Ionicons name="search" size={20} color="#999" className="mr-2" />
+          <Ionicons name="search" size={20} color="#999" />
           <TextInput
             placeholder="Search location"
             placeholderTextColor="#999"
             value={searchTerm}
             onChangeText={setSearchTerm}
             onSubmitEditing={handleSearch}
-            className="flex-1 text-base text-black"
+            className="flex-1 text-base text-black ml-2"
           />
           <Image
             source={require("../../assets/traveller.png")}

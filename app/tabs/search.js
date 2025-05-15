@@ -44,6 +44,7 @@ export default function Search() {
           (query || "").length === 0
             ? mergedData.slice(0, 5)
             : mergedData.filter((place) =>
+              typeof place.country === "string" &&
                 place.country.toLowerCase().includes(query.toLowerCase())
               );
               
@@ -62,6 +63,7 @@ export default function Search() {
 
   const handleSearch = () => {
     const newFiltered = allPlaces.filter((place) =>
+      typeof place.country === "string" &&
       place.country.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPlaces(newFiltered);
