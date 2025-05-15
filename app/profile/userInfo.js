@@ -20,9 +20,7 @@ export default function UserInfo({ user }) {
       <Text className="text-base mb-1">
         📧 Email: <Text className="font-semibold">{user.email}</Text>
       </Text>
-      <Text className="text-base mb-1 text-gray-400">
-        🆔 User ID: <Text className="font-semibold">{user.id}</Text>
-      </Text>
+      
     </View>
   );
 }

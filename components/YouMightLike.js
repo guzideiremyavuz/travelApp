@@ -67,7 +67,7 @@ const YouMightLike = () => {
             </View>
             <View className="items-end">
               <Text className="text-orange-500 font-bold mb-1">
-                {item.price}
+                ${item.price}
               </Text>
               <TouchableOpacity
                 onPress={() => {

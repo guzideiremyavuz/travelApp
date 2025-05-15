@@ -117,7 +117,7 @@ const ListingDetail = () => {
             <Text className="text-orange-400 mb-2">{data.distance}</Text>
           )}
           <Text className="text-orange-500 font-bold text-lg mb-4">
-            ${data.price} per person
+            {data.price} per person
           </Text>
 
           {data.tripPlan && (
@@ -169,7 +169,14 @@ const ListingDetail = () => {
           <TouchableOpacity
             className="bg-orange-500 px-6 py-3 rounded-full"
             onPress={() => {
+              if (!user?.id) {
+                alert("Please login first to make a reservation.");
+                router.push("/profile/auth"); // ✅ Doğru yönlendirme
+                return;
+              }
+
               router.push(`/tabs/bookmarks?id=${data.id}&count=${personCount}`);
+
             }}
           >
             <Text className="text-white font-semibold text-base">

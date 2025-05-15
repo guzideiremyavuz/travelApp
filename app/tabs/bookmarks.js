@@ -164,7 +164,7 @@ export default function Bookmarks() {
     const payload = {
       userId: Number(user.id),
       placeId: placeData.id,
-      placeName: placeData.name,
+      placeName: placeData.name || placeData.title || "Unknown Place",
       startDate,
       endDate,
       checkInTime,
