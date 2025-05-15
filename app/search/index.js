@@ -22,6 +22,7 @@ export default function Search() {
   const [allPlaces, setAllPlaces] = useState([]);
   const { favorites, toggleFavorite } = useFavorites();
   const { user } = useUser();
+  const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,13 +65,30 @@ export default function Search() {
 
     fetchData();
   }, [query]);
+  useEffect(() => {
+    if (!searchTerm) {
+      setSuggestions([]);
+      return;
+    }
+
+    const matches = allPlaces.filter((place) => {
+      const target =
+        place.name?.toLowerCase() ||
+        place.title?.toLowerCase() ||
+        place.country?.toLowerCase();
+      return target?.includes(searchTerm.toLowerCase());
+    });
+
+    setSuggestions(matches.slice(0, 3));
+  }, [searchTerm, allPlaces]);
 
   const handleSearch = () => {
-    const newFiltered = allPlaces.filter((place) =>
-  place.country?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
-  place.name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
-  place.title?.toLowerCase().includes(searchTerm?.toLowerCase())
-);
+    const newFiltered = allPlaces.filter(
+      (place) =>
+        place.country?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+        place.name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+        place.title?.toLowerCase().includes(searchTerm?.toLowerCase())
+    );
     setFilteredPlaces(newFiltered);
   };
 
@@ -142,6 +160,26 @@ export default function Search() {
             resizeMode="contain"
           />
         </View>
+
+        {suggestions.length > 0 && (
+          <View className="bg-white shadow mx-4 rounded-b-lg z-50 -mt-2">
+            {suggestions.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                onPress={() => {
+                  setSearchTerm(item.name || item.title || item.country);
+                  handleSearch();
+                  setSuggestions([]);
+                }}
+                className="p-3 border-b border-gray-200"
+              >
+                <Text className="text-black">
+                  {item.name || item.title || item.country}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </View>
 
       <Text className="text-2xl font-bold px-4 mb-4">

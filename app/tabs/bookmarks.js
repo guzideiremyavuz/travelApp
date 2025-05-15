@@ -5,7 +5,6 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 
-
 export default function Bookmarks() {
   const { user } = useUser();
   const [startDate, setStartDate] = useState(null);
@@ -43,7 +42,7 @@ export default function Bookmarks() {
     const end = new Date(endDate);
     const diffTime = end - start;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    return diffDays > 0 ? diffDays : 1;
   };
 
   const getMarkedDates = () => {
@@ -122,6 +121,8 @@ export default function Bookmarks() {
         markingType={"period"}
         markedDates={getMarkedDates()}
         onDayPress={handleDayPress}
+        minDate={new Date().toISOString().split("T")[0]}
+        maxDate={"2025-9-30"}
       />
 
       <View className="mt-6">
@@ -131,70 +132,99 @@ export default function Bookmarks() {
         {endDate && <Text className="text-base mb-2">End Date: {endDate}</Text>}
         {startDate && endDate && (
           <Text className="text-base font-semibold text-green-600">
-            You’ll stay {getStayNights()} nights
+            You’ll stay {getStayNights()}{" "}
+            {getStayNights() === 1 ? "night" : "nights"}
           </Text>
         )}
+
         {placeData && startDate && endDate && (
           <Text className="text-lg font-bold text-orange-500 mt-2">
             Total Price: ${getTotalPrice().toFixed(2)}
           </Text>
         )}
         <View className="mt-4 flex-row justify-center space-x-4">
-  <TouchableOpacity
-    onPress={() => setCheckInTime("morning")}
-    className={`px-4 py-2 rounded-full ${checkInTime === "morning" ? "bg-orange-500" : "bg-gray-200"}`}
-  >
-    <Text className={checkInTime === "morning" ? "text-white font-bold" : "text-gray-600"}>Morning</Text>
-  </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setCheckInTime("morning")}
+            className={`px-4 py-2 rounded-full ${
+              checkInTime === "morning" ? "bg-orange-500" : "bg-gray-200"
+            }`}
+          >
+            <Text
+              className={
+                checkInTime === "morning"
+                  ? "text-white font-bold"
+                  : "text-gray-600"
+              }
+            >
+              Morning
+            </Text>
+          </TouchableOpacity>
 
-  <TouchableOpacity
-    onPress={() => setCheckInTime("evening")}
-    className={`px-4 py-2 rounded-full ${checkInTime === "evening" ? "bg-orange-500" : "bg-gray-200"}`}
-  >
-    <Text className={checkInTime === "evening" ? "text-white font-bold" : "text-gray-600"}>Evening</Text>
-  </TouchableOpacity>
-</View>
-
+          <TouchableOpacity
+            onPress={() => setCheckInTime("evening")}
+            className={`px-4 py-2 rounded-full ${
+              checkInTime === "evening" ? "bg-orange-500" : "bg-gray-200"
+            }`}
+          >
+            <Text
+              className={
+                checkInTime === "evening"
+                  ? "text-white font-bold"
+                  : "text-gray-600"
+              }
+            >
+              Evening
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TouchableOpacity
-  onPress={async () => {
-    if (!startDate || !endDate || !placeData || !user?.id) return;
+        onPress={async () => {
+          const todayStr = new Date().toISOString().split("T")[0];
+          if (startDate < todayStr) {
+            alert("You cannot make a reservation in the past.");
+            return;
+          }
 
-    const payload = {
-      userId: Number(user.id),
-      placeId: placeData.id,
-      placeName: placeData.name || placeData.title || "Unknown Place",
-      startDate,
-      endDate,
-      checkInTime,
-      personCount,
-      totalPrice: getTotalPrice(),
-    };
+          if (!startDate || !endDate || !placeData || !user?.id) return;
 
-    try {
-      const res = await fetch("https://67f6443142d6c71cca613e64.mockapi.io/reservations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+          const payload = {
+            userId: Number(user.id),
+            placeId: placeData.id,
+            placeName: placeData.name || placeData.title || "Unknown Place",
+            startDate,
+            endDate,
+            checkInTime,
+            personCount,
+            totalPrice: getTotalPrice(),
+          };
 
-      if (res.ok) {
-        alert("Reservation saved!");
-        router.push("/tabs/profile"); // Rezervasyon sonrası yönlendirme
-      } else {
-        alert("Failed to save reservation.");
-      }
-    } catch (err) {
-      console.error("Reservation error:", err);
-      alert("Error occurred.");
-    }
-  }}
-  className="mt-6 bg-orange-500 py-3 px-6 rounded-full"
->
-  <Text className="text-white text-center font-bold">Confirm Dates</Text>
-</TouchableOpacity>
+          try {
+            const res = await fetch(
+              "https://67f6443142d6c71cca613e64.mockapi.io/reservations",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              }
+            );
 
+            if (res.ok) {
+              alert("Reservation saved!");
+              router.push("/tabs/profile");
+            } else {
+              alert("Failed to save reservation.");
+            }
+          } catch (err) {
+            console.error("Reservation error:", err);
+            alert("Error occurred.");
+          }
+        }}
+        className="mt-6 bg-orange-500 py-3 px-6 rounded-full"
+      >
+        <Text className="text-white text-center font-bold">Confirm Dates</Text>
+      </TouchableOpacity>
     </View>
   );
 }

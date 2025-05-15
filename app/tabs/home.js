@@ -29,7 +29,7 @@ const Home = () => {
         Use one of our suggestions or make a{"\n"}list of what a pack
       </Text>
 
-      <View className="flex-row items-center bg-white p-2 rounded-lg mt-4 mb-4">
+      <View className="flex-row items-center bg-white p-2 rounded-lg mt-4">
         <Ionicons name="search" size={28} color={"#CCCCCC"} />
         <TextInput
           placeholder="Search location"
