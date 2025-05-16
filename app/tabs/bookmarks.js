@@ -36,7 +36,6 @@ export default function Bookmarks() {
       }
     }
   };
-
   const getStayNights = () => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -44,7 +43,6 @@ export default function Bookmarks() {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays > 0 ? diffDays : 1;
   };
-
   const getMarkedDates = () => {
     if (!startDate) return {};
 

@@ -42,14 +42,8 @@ const Home = () => {
             }
           }}
         />
-
       </View>
-
-
-     
       <RecommendedPlaces />
-
-      
       <YouMightLike />
     </ScrollView>
   );

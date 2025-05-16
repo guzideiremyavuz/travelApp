@@ -41,7 +41,6 @@ const ListingDetail = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [id]);
 
@@ -74,7 +73,7 @@ const ListingDetail = () => {
     <View className="flex-1 bg-white">
       <ScrollView
         className="flex-1"
-        nestedScrollEnabled={true} // Hata önleyici ayar
+        nestedScrollEnabled={true} 
         contentContainerStyle={{ paddingBottom: 140 }}
         showsVerticalScrollIndicator={false}
       >
@@ -136,7 +135,6 @@ const ListingDetail = () => {
         </View>
       </ScrollView>
 
-      {/* Order Section */}
       <View className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
         <View className="flex-row justify-between items-center mb-3">
           <Text className="text-gray-500">Select Persons:</Text>
@@ -171,12 +169,10 @@ const ListingDetail = () => {
             onPress={() => {
               if (!user?.id) {
                 alert("Please login first to make a reservation.");
-                router.push("/profile/auth"); // ✅ Doğru yönlendirme
+                router.push("/profile/auth"); 
                 return;
               }
-
               router.push(`/tabs/bookmarks?id=${data.id}&count=${personCount}`);
-
             }}
           >
             <Text className="text-white font-semibold text-base">

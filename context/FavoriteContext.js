@@ -6,17 +6,13 @@ const FavoriteContext = createContext();
 export const FavoriteProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
   const { user } = useUser();
-
   const BASE_URL = "https://67f6443142d6c71cca613e64.mockapi.io/favorites";
-
-  // Kullanıcı değiştiğinde favorileri yükle
   useEffect(() => {
     const loadFavorites = async () => {
       if (!user?.id) {
         setFavorites([]);
         return;
       }
-
       try {
         const res = await fetch(`${BASE_URL}?userId=${Number(user.id)}`);
         const data = await res.json();
@@ -41,7 +37,6 @@ const toggleFavorite = async (place) => {
       fav.placeId?.toString() === placeId &&
       fav.userId?.toString() === userId
   );
-
   try {
     if (existing) {
       await fetch(`${BASE_URL}/${existing.id}`, { method: "DELETE" });
@@ -62,7 +57,6 @@ const toggleFavorite = async (place) => {
           place,
         }),
       });
-
       const newFav = await res.json();
       setFavorites((prev) => [...prev, newFav]);
     }
@@ -70,8 +64,6 @@ const toggleFavorite = async (place) => {
     console.error("Favori toggle hatası:", err);
   }
 };
-
-
   return (
     <FavoriteContext.Provider value={{ favorites, toggleFavorite }}>
       {children}

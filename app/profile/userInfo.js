@@ -9,7 +9,6 @@ export default function UserInfo({ user }) {
       </View>
     );
   }
-
   return (
     <View className="mt-4 p-4 bg-gray-100 rounded-lg">
       <Text className="text-lg font-bold mb-2">Your Information</Text>
@@ -20,8 +19,6 @@ export default function UserInfo({ user }) {
       <Text className="text-base mb-1">
         📧 Email: <Text className="font-semibold">{user.email}</Text>
       </Text>
-
-      
       {user?.cardNumber && (
         <View className="mt-4 bg-white p-3 rounded shadow">
           <Text className="font-semibold text-gray-600 mb-1">Credit Card Info</Text>
