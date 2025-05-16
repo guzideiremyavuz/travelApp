@@ -32,7 +32,7 @@ export default function Profile() {
     <ScrollView className="flex-1 bg-white px-6 pt-10">
       <Text className="text-2xl font-bold mb-4">Welcome, {user.name}!</Text>
 
-      {/* Sekme butonları */}
+      
       <View className="flex-row justify-around mb-4">
         <TouchableOpacity
           onPress={() => setActiveTab("reservations")}
@@ -53,11 +53,11 @@ export default function Profile() {
         </TouchableOpacity>
       </View>
 
-      {/* Aktif sekmeye göre bileşen göster */}
+      
       {activeTab === "reservations" && <Reservations userId={user.id} />}
       {activeTab === "info" && <UserInfo user={user} />}
 
-      {/* Çıkış butonu */}
+      
       <TouchableOpacity
         onPress={() => setUser(null)}
         className="bg-gray-300 px-6 py-3 rounded-full mt-10 mb-10"
